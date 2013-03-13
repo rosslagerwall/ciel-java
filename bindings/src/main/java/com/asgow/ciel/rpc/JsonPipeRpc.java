@@ -137,12 +137,13 @@ public class JsonPipeRpc implements WorkerRpc {
 		
 		try {
 			JsonArray jarLib = task.get("jar_lib").getAsJsonArray();
+			JsonArray jarLibFiles = task.get("jar_lib_files").getAsJsonArray();
 			URL[] urls = new URL[jarLib.size()];
 			Reference[] refJarLib = new Reference[jarLib.size()];
 			
 			for (int i = 0; i < urls.length; ++i) {
 				refJarLib[i] = Reference.fromJson(jarLib.get(i).getAsJsonObject());
-				urls[i] = new URL("file://" + this.getFilenameForReference(refJarLib[i]));
+				urls[i] = new URL("file://" + jarLibFiles.get(i).getAsString());
 			}
 			
 			if (Ciel.CLASSLOADER == null) { 
@@ -182,7 +183,7 @@ public class JsonPipeRpc implements WorkerRpc {
 			
 			if (task.has("object_ref")) {
 				// This is an internally-created task.
-				String contObjectFilename = this.getFilenameForReference(Reference.fromJson(task.get("object_ref").getAsJsonObject()));
+				String contObjectFilename = task.get("object_ref").getAsString();
 				ObjectInputStream ois = new UserObjectInputStream(new FileInputStream(contObjectFilename));
 				ret = (FirstClassJavaTask) ois.readObject();
 			} else {

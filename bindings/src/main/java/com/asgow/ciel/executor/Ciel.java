@@ -61,13 +61,13 @@ public final class Ciel {
 	}
 	
 	public static Reference[] spawn(FirstClassJavaTask taskObject, String[] args, int numOutputs) throws IOException {
-		WritableReference objOut = Ciel.RPC.getNewObjectFilename("obj");
+		WritableReference objOut = Ciel.RPC.allocateAndOpen("obj");
+		objOut.setSpawnClose(true);
 		ObjectOutputStream oos = new ObjectOutputStream(objOut.open());
 		oos.writeObject(taskObject);
 		oos.close();
-		Reference objRef = objOut.getCompletedRef();
-		
-		FirstClassJavaTaskInformation fcjti = new FirstClassJavaTaskInformation(objRef, Ciel.jarLib, args, numOutputs);
+
+		FirstClassJavaTaskInformation fcjti = new FirstClassJavaTaskInformation(objOut, Ciel.jarLib, args, numOutputs);
 		for (Reference dependency : taskObject.getDependencies()) {
 			if (dependency != null) {
 				fcjti.addDependency(dependency);

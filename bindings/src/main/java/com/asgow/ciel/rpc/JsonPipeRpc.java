@@ -104,6 +104,7 @@ public class JsonPipeRpc implements WorkerRpc {
 	public static final JsonPrimitive WAIT_STREAM = new JsonPrimitive("wait_stream");	
 	public static final JsonPrimitive ALLOCATE_OUTPUT = new JsonPrimitive("allocate_output");
 	public static final JsonPrimitive OPEN_OUTPUT = new JsonPrimitive("open_output");
+	public static final JsonPrimitive ALLOCATE_OPEN = new JsonPrimitive("allocate_open");
 	public static final JsonPrimitive EXIT = new JsonPrimitive("exit");
 	public static final JsonPrimitive SPAWN = new JsonPrimitive("spawn");
 	public static final JsonPrimitive TAIL_SPAWN = new JsonPrimitive("tail_spawn");
@@ -314,6 +315,14 @@ public class JsonPipeRpc implements WorkerRpc {
 		return new WaitAsyncInputResponse(size, done, success);
 	}
 	
+	public WritableReference allocateAndOpen(String refPrefix) {
+		JsonObject args = new JsonObject();
+		args.add("prefix", new JsonPrimitive(refPrefix));
+		JsonObject response = this.sendReceiveMessage(ALLOCATE_OPEN, args).getAsJsonArray().get(1).getAsJsonObject();
+		return new WritableReference(response.get("filename").getAsString(),
+				response.get("index").getAsInt(), true);
+	}
+
 	public WritableReference getNewObjectFilename(String refPrefix) {
 		JsonObject args = new JsonObject();
 		args.add("prefix", new JsonPrimitive(refPrefix));

@@ -25,6 +25,8 @@ public interface WorkerRpc {
 	
 	WritableReference getOutputFilename(int index);
 	
+	WritableReference allocateAndOpen(String refPrefix);
+
 	WritableReference getNewObjectFilename(String refPrefix);
 	
 	Reference closeOutput(int index);

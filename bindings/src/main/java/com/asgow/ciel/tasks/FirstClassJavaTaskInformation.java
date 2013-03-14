@@ -3,6 +3,7 @@ package com.asgow.ciel.tasks;
 import java.util.LinkedList;
 
 import com.asgow.ciel.references.Reference;
+import com.asgow.ciel.references.WritableReference;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -11,6 +12,7 @@ public class FirstClassJavaTaskInformation implements TaskInformation {
 
 	private final String className;
 	private final Reference objectRef;
+	private final WritableReference writeRef;
 	private final LinkedList<Reference> dependencies;
 	private final Reference[] jarLib;
 	private final String[] args;
@@ -19,6 +21,7 @@ public class FirstClassJavaTaskInformation implements TaskInformation {
 	public FirstClassJavaTaskInformation(Class<? extends FirstClassJavaTask> clazz, Reference[] jarLib, String[] args, int numOutputs) {
 		this.className = clazz.getName();
 		this.objectRef = null;
+		this.writeRef = null;
 		this.jarLib = jarLib;
 		this.args = args;
 		this.numOutputs = numOutputs;
@@ -28,6 +31,17 @@ public class FirstClassJavaTaskInformation implements TaskInformation {
 	public FirstClassJavaTaskInformation(Reference objectRef, Reference[] jarLib, String[] args, int numOutputs) {
 		this.className = null;
 		this.objectRef = objectRef;
+		this.writeRef = null;
+		this.jarLib = jarLib;
+		this.args = args;
+		this.numOutputs = numOutputs;
+		this.dependencies = new LinkedList<Reference>();
+	}
+
+	public FirstClassJavaTaskInformation(WritableReference writeRef, Reference[] jarLib, String[] args, int numOutputs) {
+		this.className = null;
+		this.objectRef = null;
+		this.writeRef = writeRef;
 		this.jarLib = jarLib;
 		this.args = args;
 		this.numOutputs = numOutputs;
@@ -53,10 +67,10 @@ public class FirstClassJavaTaskInformation implements TaskInformation {
 		
 		if (this.className != null) {
 			ret.add("class_name", new JsonPrimitive(this.className));
-		} else if (this.objectRef != null) {
-			ret.add("object_ref", this.objectRef.toJson());
+		} else if (this.objectRef == null) {
+			ret.add("write_ref", this.writeRef.toJson());
 		} else {
-			assert false;
+			ret.add("object_ref", this.objectRef.toJson());
 		}
 		
 		JsonArray jsonJarLib = new JsonArray();

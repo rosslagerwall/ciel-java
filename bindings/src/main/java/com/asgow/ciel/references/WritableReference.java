@@ -5,6 +5,7 @@ import java.io.OutputStream;
 
 import com.asgow.ciel.executor.Ciel;
 import com.asgow.ciel.io.CielOutputStream;
+import com.google.gson.*;
 
 public class WritableReference {
 
@@ -13,6 +14,12 @@ public class WritableReference {
 	private final boolean mayOmitSize;
 	private Reference completeRef;
 	private boolean isClosed;
+
+	// If this is set, then the reference will get closed when the spawn RPC
+	// method is called, and so close() shouldn't do much.
+	private boolean isSpawnClose;
+
+	private long final_size = -1;
 	
 	public WritableReference(String filename, int outputIndex, boolean may_omit_size) {
 		this.filename = filename;
@@ -30,6 +37,10 @@ public class WritableReference {
 			throw new RuntimeException("Double close on output " + this.outputIndex);
 		}
 		this.isClosed = true;
+		if (isSpawnClose) {
+			this.final_size = final_size;
+			return;
+		}
 		this.completeRef = Ciel.RPC.closeOutput(this.outputIndex, final_size);
 	}
 	
@@ -38,12 +49,30 @@ public class WritableReference {
 			throw new RuntimeException("Double close on output " + this.outputIndex);
 		}
 		this.isClosed = true;
+		if (isSpawnClose) {
+			return;
+		}
 		if(!this.mayOmitSize) {
 			throw new RuntimeException("Must specify a size when closing WritableReference, as it was opened with may_pipe=true");
 		}
 		else {
 			this.completeRef = Ciel.RPC.closeOutput(this.outputIndex);
 		}
+	}
+
+	public void setSpawnClose(boolean val) {
+		this.isSpawnClose = val;
+	}
+
+	public long getFinalSize() {
+		return this.final_size;
+	}
+
+	public JsonObject toJson() {
+		JsonObject ret = new JsonObject();
+		ret.add("index", new JsonPrimitive(this.outputIndex));
+		ret.add("size", new JsonPrimitive(this.final_size));
+		return ret;
 	}
 	
 	public Reference getCompletedRef() {

@@ -51,6 +51,10 @@ public class FirstClassJavaTaskInformation implements TaskInformation {
 	public FirstClassJavaTaskInformation(Reference objectRef, Reference[] jarLib, String[] args) {
 		this(objectRef, jarLib, args, -1);
 	}
+
+	public FirstClassJavaTaskInformation(WritableReference writeRef, Reference[] jarLib, String[] args) {
+		this(writeRef, jarLib, args, -1);
+	}
 	
 	public void addDependency(Reference ref) {
 		this.dependencies.add(ref);

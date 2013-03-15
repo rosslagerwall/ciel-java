@@ -98,13 +98,13 @@ public final class Ciel {
 	}
 	
 	public static void tailSpawn(FirstClassJavaTask taskObject, String[] args) throws IOException {
-		WritableReference objOut = Ciel.RPC.getNewObjectFilename("obj");
+		WritableReference objOut = Ciel.RPC.allocateAndOpen("obj");
+		objOut.setSpawnClose(true);
 		ObjectOutputStream oos = new ObjectOutputStream(objOut.open());
 		oos.writeObject(taskObject);
 		oos.close();
-		Reference objRef = objOut.getCompletedRef();
-		
-		FirstClassJavaTaskInformation fcjti = new FirstClassJavaTaskInformation(objRef, Ciel.jarLib, args);
+
+		FirstClassJavaTaskInformation fcjti = new FirstClassJavaTaskInformation(objOut, Ciel.jarLib, args);
 		for (Reference dependency : taskObject.getDependencies()) {
 			if (dependency != null) {
 				fcjti.addDependency(dependency);
@@ -153,9 +153,7 @@ public final class Ciel {
 		args.addProperty("executor_name", "java2");
 		args.add("extra_dependencies", deps);
 		args.addProperty("is_fixed", true);
-		Ciel.RPC.tailSpawnRaw(args);
-		
-		Ciel.RPC.exit(true);
+		Ciel.RPC.tailSpawnRawAndExit(args);
 		
 		Ciel.RPC.getFixedContinuationTask();
 		

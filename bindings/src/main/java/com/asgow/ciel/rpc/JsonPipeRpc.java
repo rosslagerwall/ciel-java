@@ -108,6 +108,7 @@ public class JsonPipeRpc implements WorkerRpc {
 	public static final JsonPrimitive EXIT = new JsonPrimitive("exit");
 	public static final JsonPrimitive SPAWN = new JsonPrimitive("spawn");
 	public static final JsonPrimitive TAIL_SPAWN = new JsonPrimitive("tail_spawn");
+	public static final JsonPrimitive TAIL_SPAWN_EXIT = new JsonPrimitive("tail_spawn_exit");
 	public static final JsonPrimitive CLOSE_REF = new JsonPrimitive("close_ref");
 	public static final JsonPrimitive CLOSE_OUTPUT = new JsonPrimitive("close_output");
 	public static final JsonPrimitive BLOCK = new JsonPrimitive("block");
@@ -367,6 +368,10 @@ public class JsonPipeRpc implements WorkerRpc {
 	
 	public void tailSpawnRaw(JsonElement args) {
 		this.sendMessage(TAIL_SPAWN, args);
+	}
+
+	public void tailSpawnRawAndExit(JsonElement args) {
+		this.sendMessage(TAIL_SPAWN_EXIT, args);
 	}
 
 	public void log(String logMessage) {

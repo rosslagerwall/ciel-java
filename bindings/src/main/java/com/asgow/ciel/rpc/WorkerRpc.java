@@ -20,6 +20,8 @@ public interface WorkerRpc {
 	void tailSpawnTask(TaskInformation taskInfo);
 	
 	void tailSpawnRaw(JsonElement e);
+
+	void tailSpawnRawAndExit(JsonElement e);
 	
 	String getFilenameForReference(Reference ref);
 	
